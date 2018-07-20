@@ -1,0 +1,21 @@
+@charset "EUC-KR";
+
+.background_main {
+	width: 100%;
+	height: -webkit-fill-available;
+	background-image: url("../resources/img/5.jpg");
+	/* background-color: black; */
+	background-size: cover;
+	position: fixed;
+}
+
+.main_title {
+	font-size: 100px;
+	font-weight: bold;
+}
+
+.back-main {
+	padding: 150px 0;
+	margin-top: 130px;
+	background-color: rgba(255,255,255, 0.3);
+}

@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kang.mapper.TaeukMapper">
+	<insert id="register">
+		insert into user(id,password,name,addr,tel) values(#{id},#{password},#{name},#{addr},#{tel})
+	</insert>
+	<select id="login" resultType="com.kang.bean.User">
+		select * from user where id = #{id} AND password = #{password}
+	</select>
+	<select id="myinfo" resultType="com.kang.bean.User">
+		select * from user where id = #{id}
+	</select>
+	<select id="productBuyCount" resultType="int">
+		select count(*) from buyboard;
+	</select>
+	<select id="productBuyList" parameterType="hashmap" resultType="com.kang.bean.BuyBoardBean">
+		select * from buyboard order by createDate desc limit
+		#{start},#{pageGroup}
+	</select>
+	<insert id="productBuyInsert">
+		insert into buyboard(id,productName,endDate,cano,subject,content,let,longs,level,place,tm,price) 
+		values(#{id},#{productName},#{endDate},#{cano},#{subject},#{content},#{let},#{longs},#{level},#{place},#{tm},#{price})
+	</insert>
+	<insert id="productSellInsert">
+		insert into sellboard(id,productName,endDate,cano,subject,content,let,longs,level,place,price,tm,img) 
+		values(#{id},#{productName},#{endDate},#{cano},#{subject},#{content},#{let},#{longs},#{level},#{place},#{price},#{tm},#{img})
+	</insert>
+	<select id="productSellCount" resultType="int">
+		select count(*) from sellboard;
+	</select>
+	<select id="productSellList" parameterType="hashmap" resultType="com.kang.bean.SellBoardBean">
+		select * from sellboard order by createDate desc  limit
+		#{start},#{pageGroup}
+	</select>
+	<select id="productBuyInfo" resultType="com.kang.bean.BuyBoardBean">
+		select * from buyboard where productNo = #{productNo}
+	</select>
+	<select id="getCategoryName" resultType="string">
+		select caname from category where cano = #{cano}
+	</select>
+	<select id="getBuyTender" resultType="com.kang.bean.BuyTenderBean">
+		select * from buyTender where productNo = #{productNo}
+	</select>
+	<update id="pointUpdate" parameterType="hashmap" >
+		update user set point = point + #{point} where id = #{id}
+	</update>
+	<insert id="buyTenderInsert">
+		insert into buyTender(productNo,tenderPrice,id,memo,tel) values(#{productNo},#{tenderPrice},#{id},#{memo},#{tel})
+	</insert>
+	<select id="tenderCk" parameterType="hashmap" resultType="int">
+		select count(*) from buyTender where id = #{id} AND productNo = #{productNo}
+	</select>
+	<update id="buyTenderUpdate">
+		update buyTender set tenderPrice = #{tenderPrice},  memo = #{memo} where id = #{id} AND productNo = #{productNo}
+	</update>
+	
+	
+	<select id="productSellInfo" resultType="com.kang.bean.SellBoardBean">
+		select * from sellboard where sellProductNo = #{sellProductNo}
+	</select>
+	
+	<select id="getSellTender" resultType="com.kang.bean.SellTenderBean">
+		select * from sellTender where sellProductNo = #{sellProductNo}
+	</select>
+	
+	<select id="selltenderCk" parameterType="hashmap" resultType="int">
+		select count(*) from sellTender where id = #{id} AND sellProductNo = #{sellProductNo}
+	</select>
+	
+	<update id="sellTenderUpdate">
+		update sellTender set tenderPrice = #{tenderPrice},  memo = #{memo} where id = #{id} AND sellProductNo = #{sellProductNo}
+	</update>
+	
+	<insert id="sellTenderInsert">
+		insert into sellTender(sellProductNo,tenderPrice,id,memo,tel) values(#{sellProductNo},#{tenderPrice},#{id},#{memo},#{tel})
+	</insert>
+	<select id="mySellList" resultType="com.kang.bean.SellBoardBean">
+		select * from sellboard where id = #{id}
+	</select>
+	<select id="myBuyList" resultType="com.kang.bean.BuyBoardBean">
+		select * from buyboard where id = #{id}
+	</select>
+	
+	<resultMap id="sellBoards" type="com.kang.bean.SellBoardBean">
+		<result column="sellProductNo" property="sellProductNo"/>
+		<result column="id" property="id"/>
+		<result column="productName" property="productName"/>
+		<result column="endDate" property="endDate"/>
+		<result column="cano" property="cano"/>
+		<result column="subject" property="subject"/>
+		<result column="content" property="content"/>
+		<result column="tm" property="tm"/>
+		<result column="let" property="let"/>
+		<result column="longs" property="longs"/>
+		<result column="complete" property="complete"/>
+		<result column="tenderPerson" property="tenderPerson"/>
+		<result column="img" property="img"/>
+		<collection property="sellTenders" resultMap="sellTenders"/>
+	</resultMap>
+	<resultMap id="sellTenders" type="com.kang.bean.SellTenderBean">
+		<result column="sellProductNo" property="sellProductNo"/>
+		<result column="id" property="id"/>
+		<result column="tenderPrice" property="tenderPrice"/>
+	</resultMap>
+	
+	<select id="mySellTenderList" parameterType="String" resultMap="sellBoards">
+		select s.sellProductNo ,s.let, s.longs, s.id, s.productName, s.endDate, s.cano,  s.subject, s.content, s.tm, s.complete, s.tenderPerson, s.img, t.tenderPrice
+		from sellboard s, sellTender t
+		where s.sellProductNo = t.sellProductNo
+		AND t.id = #{id};
+	</select>
+	<resultMap id="buyBoards" type="com.kang.bean.BuyBoardBean">
+		<result column="productNo" property="productNo"/>
+		<result column="id" property="id"/>
+		<result column="productName" property="productName"/>
+		<result column="endDate" property="endDate"/>
+		<result column="cano" property="cano"/>
+		<result column="subject" property="subject"/>
+		<result column="content" property="content"/>
+		<result column="tm" property="tm"/>
+		<result column="complete" property="complete"/>
+		<result column="tenderPerson" property="tenderPerson"/>
+		<collection property="buyTenders" resultMap="buyTenders"/>
+	</resultMap>
+	<resultMap id="buyTenders" type="com.kang.bean.BuyTenderBean">
+		<result column="productNo" property="productNo"/>
+		<result column="id" property="id"/>
+		<result column="tenderPrice" property="tenderPrice"/>
+	</resultMap>
+	
+	<select id="myBuyTenderList" parameterType="String" resultMap="buyBoards">
+		select s.productNo , s.id, s.productName, s.endDate, s.cano, s.subject, s.content, s.tm, s.complete, s.tenderPerson, t.tenderPrice
+		from buyboard s, buyTender t
+		where s.productNo = t.productNo
+		AND t.id = #{id};
+	</select>
+
+	
+	<select id="buyBoards" resultType="com.kang.bean.BuyBoardBean">
+		select * from buyboard;
+	</select>
+	<select id="sellBoards" resultType="com.kang.bean.SellBoardBean">
+		select * from sellboard;
+	</select>
+	<update id="buyResult"  parameterType="hashmap">
+		update buyboard set complete = #{complete}, tenderPerson = #{tenderPerson} where productNo = #{productNo}
+	</update>
+	
+	<select id="tenderUserInfo" parameterType="hashmap" resultType="com.kang.bean.BuyTenderBean">
+		select * from buyTender where id = #{id} AND productNo = #{productNo}
+	</select>
+	<update id="sellResult"  parameterType="hashmap">
+		update sellboard set complete = #{complete}, tenderPerson = #{tenderPerson} where sellProductNo = #{sellProductNo}
+	</update>
+	<select id="tenderSellUserInfo" parameterType="hashmap" resultType="com.kang.bean.SellTenderBean">
+		select * from sellTender where id = #{id} AND sellProductNo = #{sellProductNo}
+	</select>
+	<update id="sellTenderStatusUpdate" parameterType="hashmap">
+		update sellTender set status = #{status}  where id = #{id} AND sellProductNo = #{sellProductNo}
+	</update>
+	<update id="sellTenderStatusUpdate2">
+		update sellTender set status = '거래완료'  where sellTenderNo = #{sellTenderNo} 
+	</update>
+	<update id="sellProductUpdate">
+		update sellboard set complete = '거래완료'  where sellProductNo = #{sellProductNo} 
+	</update>
+</mapper>

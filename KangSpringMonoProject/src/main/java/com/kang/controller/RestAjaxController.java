@@ -44,8 +44,6 @@ public class RestAjaxController {
 			String saveFileName = null;
 			try {
 				saveFileName = uploadFile(file.getOriginalFilename(), file.getBytes());
-				System.out.println("12312312312");
-				int a = 123;
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
